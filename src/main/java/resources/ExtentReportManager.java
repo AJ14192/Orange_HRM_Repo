@@ -17,8 +17,8 @@ public class ExtentReportManager {
 
         extentReport = new ExtentReports();
         extentReport.attachReporter(reporter);
-        extentReport.setSystemInfo("Operating System","Windows 10");
-        extentReport.setSystemInfo("Tested By","Arun Motoori");
+        extentReport.setSystemInfo("Operating System","Windows 11");
+        extentReport.setSystemInfo("Tested By","Ankit Jadeja");
 
         return extentReport;
 
