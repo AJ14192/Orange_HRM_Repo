@@ -1,0 +1,53 @@
+
+name: CI - Selenium Java (Maven)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'   # Change to 11/21 if your project requires
+
+      # Install Google Chrome on the runner
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      # Optional: Cache Maven dependencies to speed up builds
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
+
+      # Run tests. Ensure your framework starts Chrome in headless mode.
+      - name: Run Maven tests
+        run: |
+          mvn -B -q -DskipTests=false test
+        env:
+          # If your code reads this variable, use it to switch to headless
+          HEADLESS: "true"
+
+      # Upload test reports (JUnit XML / Surefire / TestNG)
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven-test-reports
+          path: |
+            **/target/surefire-reports/**
+            **/target/failsafe-reports/**
